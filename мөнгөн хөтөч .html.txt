@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мөнгөн Хөтөч Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c14;--card:#0e1420;--card2:#131926;--border:#1e2a3a;--gold:#f5c842;--gold2:#e6a800;--green:#22d47a;--red:#ff4d6d;--blue:#4da6ff;--purple:#a78bfa;--text:#f0f4ff;--muted:#6b7fa0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;}
+.header{position:sticky;top:0;z-index:50;background:rgba(8,12,20,0.95);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo h1{font-size:0.95rem;font-weight:800;}
+.logo p{font-size:0.65rem;color:var(--muted);}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(8,12,20,0.98);border-top:1px solid var(--border);display:flex;padding:6px 4px;}
+button.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:none;background:transparent;cursor:pointer;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.6rem;font-weight:600;}
+button.nav-item.active{color:var(--gold);}
+.nav-icon{font-size:1.1rem;}
+.container{max-width:480px;margin:0 auto;padding:16px;}
+.panel{display:none;}
+.panel.active{display:block;}
+/* cards */
+.hero{background:linear-gradient(135deg,#0e1a2e,#111827);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:14px;}
+.hero-label{font-size:0.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.hero-amount{font-size:2.2rem;font-weight:800;}
+.hero-amount.pos{color:var(--green);}.hero-amount.neg{color:var(--red);}
+.hero-sub{font-size:0.72rem;color:var(--muted);margin-top:5px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mini{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.mini-label{font-size:0.65rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:5px;}
+.mini-val{font-size:1.15rem;font-weight:800;}
+.g{color:var(--green);}.r{color:var(--red);}.b{color:var(--blue);}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sec-title{font-size:0.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+/* buttons */
+button.btn-add{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:8px;padding:7px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.75rem;font-weight:800;cursor:pointer;}
+button.btn-save{flex:1;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:9px;padding:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer;}
+button.btn-cancel{background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:9px;padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;}
+button.btn-pay{background:#1a3a1a;color:var(--green);border:1px solid #22d47a44;border-radius:7px;padding:7px 13px;font-size:0.75rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;}
+button.btn-del{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:7px;padding:7px 11px;font-size:0.72rem;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;}
+button.btn-pdf{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:8px;padding:7px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;}
+/* form */
+.form-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;display:none;}
+.form-wrap.open{display:block;}
+.form-row{margin-bottom:10px;}
+.form-row label{display:block;font-size:0.7rem;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;}
+.form-row input,.form-row select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;outline:none;}
+.form-row select option{background:var(--card2);}
+.form-acts{display:flex;gap:8px;}
+/* item card */
+.item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;}
+.item.paid{opacity:0.5;}
+.item-top{display:flex;justify-content:space-between;margin-bottom:6px;}
+.item-name{font-weight:700;font-size:0.88rem;}
+.item-amt{font-weight:800;font-size:1rem;}
+.item-meta{font-size:0.7rem;color:var(--muted);margin-bottom:8px;}
+.prog-bg{background:var(--card2);border-radius:99px;height:5px;overflow:hidden;margin-bottom:8px;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),#00ff88);}
+.item-acts{display:flex;gap:6px;align-items:center;}
+.badge-paid{background:#0d2a1a;color:var(--green);border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;}
+.badge-cat{border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:700;}
+.badge-need{background:#1a2a4a;color:var(--blue);}
+.badge-want{background:#2a1a3a;color:var(--purple);}
+.badge-save{background:#2a2a0a;color:var(--gold);}
+/* progress */
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;}
+.prog-row{display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:6px;}
+/* snowball */
+.snow{background:linear-gradient(135deg,#1a1400,#0e1420);border:1px solid #3a2a0033;border-radius:16px;padding:16px;margin-bottom:14px;}
+.snow h3{font-size:0.85rem;font-weight:800;color:var(--gold);margin-bottom:6px;}
+.snow-desc{font-size:0.73rem;color:var(--muted);margin-bottom:10px;}
+.snow-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.snow-item:last-child{border-bottom:none;}
+.snow-num{width:22px;height:22px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border-radius:50%;font-size:0.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.snow-name{font-size:0.8rem;font-weight:700;flex:1;}
+/* bank */
+.bank-tabs{display:flex;gap:6px;margin-bottom:12px;}
+button.bank-tag{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:0.72rem;font-weight:700;cursor:pointer;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;}
+button.bank-tag.active{border-color:var(--gold);color:var(--gold);}
+.bank-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;}
+.bank-name{font-weight:800;font-size:0.88rem;margin-bottom:8px;}
+.bank-rates{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.rate-box{background:var(--card2);border-radius:8px;padding:8px 10px;}
+.rate-label{font-size:0.63rem;color:var(--muted);margin-bottom:2px;}
+.rate-val{font-size:0.88rem;font-weight:800;color:var(--gold);}
+/* calc */
+.calc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
+.calc h3{font-size:0.83rem;font-weight:800;color:var(--blue);margin-bottom:12px;}
+.calc-res{background:var(--card2);border-radius:10px;padding:12px;margin-top:10px;display:none;}
+.calc-row{display:flex;justify-content:space-between;padding:4px 0;font-size:0.78rem;}
+.calc-row span:first-child{color:var(--muted);}
+.calc-row span:last-child{font-weight:700;}
+/* budget */
+.rule-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.rule-card h3{font-size:0.82rem;font-weight:800;color:var(--blue);margin-bottom:12px;}
+.rule-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.rule-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.75rem;flex-shrink:0;}
+.rc-n{background:#1a2a4a;color:var(--blue);}
+.rc-w{background:#2a1a3a;color:var(--purple);}
+.rc-s{background:#2a2000;color:var(--gold);}
+.rule-info p{font-size:0.76rem;color:var(--muted);line-height:1.4;}
+.rule-info strong{color:var(--text);}
+.bud-table{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.bud-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);}
+.bud-row:last-child{border-bottom:none;}
+.bud-row span:first-child{font-size:0.78rem;color:var(--muted);}
+.bud-row span:last-child{font-size:0.82rem;font-weight:700;}
+/* month */
+.month-bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:14px;}
+.month-bar span{font-size:0.83rem;font-weight:700;}
+button.month-btn{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:4px 12px;font-size:1rem;color:var(--muted);cursor:pointer;}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:310px;}
+.modal-title{font-size:0.78rem;color:var(--muted);margin-bottom:4px;}
+.modal-name{font-size:1rem;font-weight:800;margin-bottom:4px;}
+.modal-sub{font-size:0.78rem;color:var(--red);margin-bottom:14px;}
+.modal-lbl{font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px;}
+.modal-input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;outline:none;margin-bottom:14px;}
+.modal-acts{display:flex;gap:8px;}
+button.modal-ok{flex:1;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:9px;padding:11px;font-weight:800;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+button.modal-ok.red{background:var(--red);color:#fff;}
+button.modal-cancel{background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:9px;padding:11px 14px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+.modal-icon{font-size:2rem;text-align:center;margin-bottom:10px;}
+.tc{text-align:center;}
+.empty{text-align:center;padding:28px;color:var(--muted);font-size:0.8rem;}
+.empty-icon{font-size:2rem;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">💰</div>
+    <div><h1>Мөнгөн Хөтөч Pro</h1><p>Санхүүгийн менежер</p></div>
+  </div>
+  <button class="btn-pdf" id="J_pdf">📄 PDF</button>
+</div>
+
+<div class="container">
+  <!-- OVERVIEW -->
+  <div id="panel-overview" class="panel active">
+    <div class="month-bar">
+      <button class="month-btn" id="J_prev">‹</button>
+      <span id="J_month">Энэ сар</span>
+      <button class="month-btn" id="J_next">›</button>
+    </div>
+    <div class="hero">
+      <div class="hero-label">Үлдэгдэл мөнгө</div>
+      <div class="hero-amount pos" id="J_rem">₮0</div>
+      <div class="hero-sub" id="J_remsub">Орлого оруулж эхлээрэй</div>
+    </div>
+    <div class="grid2">
+      <div class="mini"><div class="mini-label">Орлого</div><div class="mini-val g" id="J_inc">₮0</div></div>
+      <div class="mini"><div class="mini-label">Зарлага</div><div class="mini-val r" id="J_exp">₮0</div></div>
+      <div class="mini"><div class="mini-label">Нийт өр</div><div class="mini-val r" id="J_dbt">₮0</div></div>
+      <div class="mini"><div class="mini-label">Өрийн тоо</div><div class="mini-val b" id="J_dbtcnt">0</div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-row"><span style="color:var(--muted)">Өр дарах явц</span><span style="font-weight:800;color:var(--green)" id="J_pct">0%</span></div>
+      <div class="prog-bg"><div class="prog-fill" id="J_bar" style="width:0%"></div></div>
+      <div style="font-size:0.68rem;color:var(--muted);margin-top:6px;" id="J_barsub">Өр нэмж явцаа хянаарай</div>
+    </div>
+    <div class="sec-head"><div class="sec-title">❄️ Snowball дараалал</div></div>
+    <div class="snow">
+      <h3>🏔 Хамгийн бага өрнөөс эхэл!</h3>
+      <div class="snow-desc">Жижиг өрийг эхэлж дар → тэр төлбөрийг дараагийнхад нэм → хурдасна!</div>
+      <div id="J_snow"><div class="empty"><div class="empty-icon">❄️</div>Өр нэмсний дараа харагдана</div></div>
+    </div>
+  </div>
+
+  <!-- DEBTS -->
+
+  <div id="panel-debts" class="panel">
+    <div class="sec-head">
+      <div class="sec-title">💳 Өр зээл</div>
+      <button class="btn-add" id="J_dform_toggle">+ Нэмэх</button>
+    </div>
+    <div class="form-wrap" id="J_dform">
+      <div class="form-row"><label>Өрийн нэр</label><input type="text" id="J_dn" placeholder="Голомт банк..."/></div>
+      <div class="form-row"><label>Нийт дүн (₮)</label><input type="number" id="J_da" placeholder="1000000"/></div>
+      <div class="form-row"><label>Хүү (% / сар)</label><input type="number" id="J_di" placeholder="0" step="0.1"/></div>
+      <div class="form-row"><label>Сарын төлбөр (₮)</label><input type="number" id="J_dm" placeholder="100000"/></div>
+      <div class="form-acts">
+        <button class="btn-save" id="J_dadd">Хадгалах</button>
+        <button class="btn-cancel" id="J_dcancel">Болих</button>
+      </div>
+    </div>
+    <div id="J_dlist"><div class="empty"><div class="empty-icon">💳</div>Өр зээлээ нэмж эхлээрэй</div></div>
+  </div>
+
+  <!-- BUDGET -->
+
+  <div id="panel-budget" class="panel">
+    <div class="rule-card">
+      <h3>📐 50 / 30 / 20 Дүрэм</h3>
+      <div class="rule-row"><div class="rule-circle rc-n">50%</div><div class="rule-info"><p><strong>Хэрэгцээ</strong> — түрээс, хоол, тээвэр</p></div></div>
+      <div class="rule-row"><div class="rule-circle rc-w">30%</div><div class="rule-info"><p><strong>Хүсэл</strong> — зугаалга, хувцас, ресторан</p></div></div>
+      <div class="rule-row"><div class="rule-circle rc-s">20%</div><div class="rule-info"><p><strong>Хадгалалт & Өр</strong> — хуримтлал, зээл</p></div></div>
+    </div>
+    <div class="sec-head"><div class="sec-title">📊 Таны тооцоо</div></div>
+    <div class="bud-table" id="J_btable"><div class="bud-row"><span>Орлого нэмнэ үү →</span><span style="color:var(--muted)">Орлого таб</span></div></div>
+    <div class="sec-head" style="margin-top:8px">
+      <div class="sec-title">💸 Зарлага</div>
+      <button class="btn-add" id="J_eform_toggle">+ Нэмэх</button>
+    </div>
+    <div class="form-wrap" id="J_eform">
+      <div class="form-row"><label>Зарлагын нэр</label><input type="text" id="J_en" placeholder="Түрээс..."/></div>
+      <div class="form-row"><label>Дүн (₮)</label><input type="number" id="J_ea" placeholder="200000"/></div>
+      <div class="form-row"><label>Ангилал</label>
+        <select id="J_ec"><option value="need">🏠 Хэрэгцээ</option><option value="want">🎉 Хүсэл</option><option value="save">💰 Хадгалалт/Өр</option></select>
+      </div>
+      <div class="form-acts">
+        <button class="btn-save" id="J_eadd">Хадгалах</button>
+        <button class="btn-cancel" id="J_ecancel">Болих</button>
+      </div>
+    </div>
+    <div id="J_elist"><div class="empty"><div class="empty-icon">📝</div>Зарлагаа нэмж эхлээрэй</div></div>
+  </div>
+
+  <!-- BANK -->
+
+  <div id="panel-bank" class="panel">
+    <div class="sec-head"><div class="sec-title">🏦 Монгол банкуудын хүү</div></div>
+    <div class="bank-tabs">
+      <button class="bank-tag active" data-f="all">Бүгд</button>
+      <button class="bank-tag" data-f="loan">Зээл</button>
+      <button class="bank-tag" data-f="deposit">Хадгаламж</button>
+    </div>
+    <div id="J_banks"></div>
+    <div style="height:1px;background:var(--border);margin:14px 0;"></div>
+    <div class="calc">
+      <h3>🧮 Зээл тооцоолол</h3>
+      <div class="form-row"><label>Зээлийн дүн (₮)</label><input type="number" id="J_ca" placeholder="10000000"/></div>
+      <div class="form-row"><label>Хүү (% / жил)</label><input type="number" id="J_cr" placeholder="18" step="0.5"/></div>
+      <div class="form-row"><label>Хугацаа (сар)</label><input type="number" id="J_ct" placeholder="36"/></div>
+      <div class="calc-res" id="J_cres">
+        <div class="calc-row"><span>Сарын төлбөр</span><span id="J_cmon" style="color:var(--gold)"></span></div>
+        <div class="calc-row"><span>Нийт төлбөр</span><span id="J_ctot"></span></div>
+        <div class="calc-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;font-weight:800"><span>Нийт хүүний дүн</span><span id="J_cint" style="color:var(--red)"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOME -->
+
+  <div id="panel-income" class="panel">
+    <div class="sec-head">
+      <div class="sec-title">💵 Орлого</div>
+      <button class="btn-add" id="J_iform_toggle">+ Нэмэх</button>
+    </div>
+    <div class="form-wrap" id="J_iform">
+      <div class="form-row"><label>Орлогын нэр</label><input type="text" id="J_in" placeholder="Цалин..."/></div>
+      <div class="form-row"><label>Дүн (₮)</label><input type="number" id="J_ia" placeholder="1500000"/></div>
+      <div class="form-acts">
+        <button class="btn-save" id="J_iadd">Хадгалах</button>
+        <button class="btn-cancel" id="J_icancel">Болих</button>
+      </div>
+    </div>
+    <div id="J_ilist"><div class="empty"><div class="empty-icon">💵</div>Орлогоо нэмж эхлээрэй</div></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-item active" data-tab="overview"><span class="nav-icon">📊</span>Ерөнхий</button>
+  <button class="nav-item" data-tab="debts"><span class="nav-icon">💳</span>Өр</button>
+  <button class="nav-item" data-tab="budget"><span class="nav-icon">📋</span>Төсөв</button>
+  <button class="nav-item" data-tab="bank"><span class="nav-icon">🏦</span>Банк</button>
+  <button class="nav-item" data-tab="income"><span class="nav-icon">💵</span>Орлого</button>
+</nav>
+
+<script>
+(function(){
+'use strict';
+
+// ── DATA ──
+var BANKS=[
+  {name:'Голомт банк',icon:'🟡',ln:16,lx:24,dn:8,dx:13},
+  {name:'Хаан банк',icon:'🔵',ln:15,lx:22,dn:7.5,dx:12.5},
+  {name:'ТДБ',icon:'🟢',ln:18,lx:26,dn:9,dx:14},
+  {name:'Капитал банк',icon:'🔴',ln:17,lx:25,dn:8.5,dx:13.5},
+  {name:'Монгол банк',icon:'⚫',ln:16,lx:23,dn:8,dx:12},
+  {name:'Ариг банк',icon:'🟠',ln:18,lx:28,dn:9.5,dx:15},
+  {name:'Богд банк',icon:'🟣',ln:17,lx:24,dn:8,dx:13},
+];
+var MN=['1-р сар','2-р сар','3-р сар','4-р сар','5-р сар','6-р сар','7-р сар','8-р сар','9-р сар','10-р сар','11-р сар','12-р сар'];
+var now=new Date();
+var S={debts:[],incomes:[],expenses:[],tot0:0,cm:now.getMonth(),cy:now.getFullYear()};
+var BF='all';
+
+try{var sv=localStorage.getItem('mfp4');if(sv)S=Object.assign(S,JSON.parse(sv));}catch(e){}
+function save(){try{localStorage.setItem('mfp4',JSON.stringify(S));}catch(e){}}
+function fmt(n){return '₮'+(Math.round(n||0)).toLocaleString();}
+function byM(a){return a.filter(function(x){return x.m===S.cm&&x.y===S.cy;});}
+function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+
+// ── MODAL ──
+function showModal(html, onOk){
+  var bg=document.createElement('div');
+  bg.className='modal-bg';
+  bg.innerHTML='<div class="modal">'+html+'</div>';
+  document.body.appendChild(bg);
+  var ok=bg.querySelector('.modal-ok');
+  var cn=bg.querySelector('.modal-cancel');
+  if(cn) cn.addEventListener('click',function(){bg.remove();});
+  if(ok) ok.addEventListener('click',function(){onOk(bg);bg.remove();});
+}
+
+function modalPay(d){
+  showModal(
+    '<div class="modal-title">💸 Өр төлөх</div>'+
+    '<div class="modal-name">'+d.name+'</div>'+
+    '<div class="modal-sub">Үлдэгдэл: '+fmt(d.amount)+'</div>'+
+    '<label class="modal-lbl">Төлөх дүн (₮)</label>'+
+    '<input class="modal-input" id="mpay" type="number" value="'+(d.monthly||'')+'" placeholder="100000"/>'+
+    '<div class="modal-acts"><button class="modal-ok">Төлөх</button><button class="modal-cancel">Болих</button></div>',
+    function(bg){
+      var p=parseFloat(bg.querySelector('#mpay').value);
+      if(!p||p<=0)return;
+      d.amount=Math.max(0,d.amount-p);
+      if(d.amount===0)d.paid=true;
+      save();render();
+    }
+  );
+}
+
+function modalDel(name, onOk){
+  showModal(
+    '<div class="modal-icon">🗑️</div>'+
+    '<div class="tc"><div class="modal-name">"'+name+'"</div>'+
+    '<div style="font-size:0.78rem;color:var(--muted);margin:6px 0 18px">Устгах уу?</div>'+
+    '<div class="modal-acts"><button class="modal-ok red">Устгах</button><button class="modal-cancel">Болих</button></div></div>',
+    function(){onOk();}
+  );
+}
+
+// ── TABS ──
+var panels=document.querySelectorAll('.panel');
+var navItems=document.querySelectorAll('.nav-item');
+navItems.forEach(function(btn){
+  btn.addEventListener('click',function(){
+    panels.forEach(function(p){p.classList.remove('active');});
+    navItems.forEach(function(n){n.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='bank')renderBanks();
+    render();
+  });
+});
+
+// ── MONTH ──
+document.getElementById('J_prev').addEventListener('click',function(){
+  S.cm--;if(S.cm<0){S.cm=11;S.cy--;}save();render();
+});
+document.getElementById('J_next').addEventListener('click',function(){
+  S.cm++;if(S.cm>11){S.cm=0;S.cy++;}save();render();
+});
+
+// ── FORM TOGGLES ──
+function tog(id){document.getElementById(id).classList.toggle('open');}
+function close(id){document.getElementById(id).classList.remove('open');}
+document.getElementById('J_dform_toggle').addEventListener('click',function(){tog('J_dform');});
+document.getElementById('J_dcancel').addEventListener('click',function(){close('J_dform');});
+document.getElementById('J_eform_toggle').addEventListener('click',function(){tog('J_eform');});
+document.getElementById('J_ecancel').addEventListener('click',function(){close('J_eform');});
+document.getElementById('J_iform_toggle').addEventListener('click',function(){tog('J_iform');});
+document.getElementById('J_icancel').addEventListener('click',function(){close('J_iform');});
+
+// ── ADD ──
+document.getElementById('J_dadd').addEventListener('click',function(){
+  var name=document.getElementById('J_dn').value.trim();
+  var amount=parseFloat(document.getElementById('J_da').value);
+  var interest=parseFloat(document.getElementById('J_di').value)||0;
+  var monthly=parseFloat(document.getElementById('J_dm').value)||0;
+  if(!name||!amount)return;
+  S.debts.push({id:uid(),name:name,amount:amount,original:amount,interest:interest,monthly:monthly,paid:false,m:S.cm,y:S.cy});
+  S.tot0+=amount;
+  save();
+  ['J_dn','J_da','J_di','J_dm'].forEach(function(id){document.getElementById(id).value='';});
+  close('J_dform');render();
+});
+
+document.getElementById('J_iadd').addEventListener('click',function(){
+  var name=document.getElementById('J_in').value.trim();
+  var amount=parseFloat(document.getElementById('J_ia').value);
+  if(!name||!amount)return;
+  S.incomes.push({id:uid(),name:name,amount:amount,m:S.cm,y:S.cy});
+  save();
+  ['J_in','J_ia'].forEach(function(id){document.getElementById(id).value='';});
+  close('J_iform');render();
+});
+
+document.getElementById('J_eadd').addEventListener('click',function(){
+  var name=document.getElementById('J_en').value.trim();
+  var amount=parseFloat(document.getElementById('J_ea').value);
+  var cat=document.getElementById('J_ec').value;
+  if(!name||!amount)return;
+  S.expenses.push({id:uid(),name:name,amount:amount,cat:cat,m:S.cm,y:S.cy});
+  save();
+  ['J_en','J_ea'].forEach(function(id){document.getElementById(id).value='';});
+  close('J_eform');render();
+});
+
+// ── BANK ──
+document.querySelectorAll('.bank-tag').forEach(function(t){
+  t.addEventListener('click',function(){
+    BF=t.dataset.f;
+    document.querySelectorAll('.bank-tag').forEach(function(x){x.classList.remove('active');});
+    t.classList.add('active');
+    renderBanks();
+  });
+});
+
+function renderBanks(){
+  document.getElementById('J_banks').innerHTML=BANKS.map(function(b){
+    return '<div class="bank-card">'+
+      '<div class="bank-name">'+b.icon+' '+b.name+'</div>'+
+      '<div class="bank-rates">'+
+      (BF!=='deposit'?'<div class="rate-box"><div class="rate-label">🏦 Зээлийн хүү/жил</div><div class="rate-val">'+b.ln+'–'+b.lx+'%</div></div>':'')+
+      (BF!=='loan'?'<div class="rate-box"><div class="rate-label">💰 Хадгаламжийн хүү</div><div class="rate-val">'+b.dn+'–'+b.dx+'%</div></div>':'')+
+      '</div></div>';
+  }).join('');
+}
+
+// ── CALC ──
+['J_ca','J_cr','J_ct'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',calcLoan);
+});
+function calcLoan(){
+  var P=parseFloat(document.getElementById('J_ca').value);
+  var r=parseFloat(document.getElementById('J_cr').value)/100/12;
+  var n=parseInt(document.getElementById('J_ct').value);
+  var el=document.getElementById('J_cres');
+  if(!P||!r||!n){el.style.display='none';return;}
+  var m=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  var tot=m*n;
+  el.style.display='block';
+  document.getElementById('J_cmon').textContent=fmt(m);
+  document.getElementById('J_ctot').textContent=fmt(tot);
+  document.getElementById('J_cint').textContent=fmt(tot-P);
+}
+
+// ── PDF ──
+document.getElementById('J_pdf').addEventListener('click',function(){
+  var inc=byM(S.incomes),exp=byM(S.expenses),deb=S.debts.filter(function(d){return !d.paid;});
+  var ti=inc.reduce(function(s,i){return s+i.amount;},0);
+  var te=exp.reduce(function(s,e){return s+e.amount;},0);
+  var td=deb.reduce(function(s,d){return s+d.amount;},0);
+  var now2=new Date();
+  var w=window.open('','_blank');
+  if(!w){alert('Pop-up блоклогдсон байна. Браузерийн тохиргооноос зөвшөөрнө үү.');return;}
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Тайлан</title>'+
+    '<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:30px;color:#111;}'+
+    'h1{color:#1a1a2e;border-bottom:3px solid #f5c842;padding-bottom:10px;}h2{font-size:1rem;margin:18px 0 8px;color:#1a1a2e;}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:10px;}th{background:#1a1a2e;color:#fff;padding:8px 10px;text-align:left;font-size:0.8rem;}'+
+    'td{padding:7px 10px;border-bottom:1px solid #eee;font-size:0.82rem;}.g{color:green;font-weight:700;}.r{color:red;font-weight:700;}'+
+    '.sum{background:#f5f5f5;border-radius:8px;padding:14px;margin-bottom:16px;}.sr{display:flex;justify-content:space-between;padding:3px 0;font-size:0.85rem;}'+
+    '@media print{button{display:none;}}</style></head><body>'+
+
+```
+'<h1>💰 Санхүүгийн тайлан</h1>'+
+'<p style="color:#666;font-size:0.8rem">'+now2.getFullYear()+' '+MN[S.cm]+' • '+now2.toLocaleDateString()+'</p>'+
+'<div class="sum">'+
+'<div class="sr"><span>Орлого</span><span class="g">'+fmt(ti)+'</span></div>'+
+'<div class="sr"><span>Зарлага</span><span class="r">'+fmt(te)+'</span></div>'+
+'<div class="sr"><span>Нийт өр</span><span class="r">'+fmt(td)+'</span></div>'+
+'<div class="sr" style="font-weight:700;border-top:1px solid #ddd;padding-top:6px;margin-top:4px"><span>Үлдэгдэл</span><span class="'+(ti-te>=0?'g':'r')+'">'+fmt(ti-te)+'</span></div>'+
+'</div>'+
+'<h2>Орлого</h2><table><tr><th>Нэр</th><th>Дүн</th></tr>'+
+inc.map(function(i){return '<tr><td>'+i.name+'</td><td class="g">'+fmt(i.amount)+'</td></tr>';}).join('')+
+'</table><h2>Зарлага</h2><table><tr><th>Нэр</th><th>Ангилал</th><th>Дүн</th></tr>'+
+exp.map(function(e){return '<tr><td>'+e.name+'</td><td>'+{need:'Хэрэгцээ',want:'Хүсэл',save:'Хадгалалт'}[e.cat]+'</td><td class="r">'+fmt(e.amount)+'</td></tr>';}).join('')+
+'</table><h2>Өр зээл</h2><table><tr><th>Нэр</th><th>Үлдэгдэл</th><th>Сарын</th><th>Явц</th></tr>'+
+deb.map(function(d){return '<tr><td>'+d.name+'</td><td class="r">'+fmt(d.amount)+'</td><td>'+fmt(d.monthly)+'</td><td>'+Math.round((d.original-d.amount)/d.original*100)+'%</td></tr>';}).join('')+
+'</table><br><button onclick="window.print()" style="background:#f5c842;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer">🖨️ Хэвлэх / PDF</button>'+
+'</body></html>');
+```
+
+w.document.close();
+});
+
+// ── RENDER ──
+function render(){
+var n=new Date();
+var isCur=S.cm===n.getMonth()&&S.cy===n.getFullYear();
+document.getElementById(‘J_month’).textContent=isCur?’Энэ сар — ’+MN[S.cm]:S.cy+’он ’+MN[S.cm];
+
+var inc=byM(S.incomes),exp=byM(S.expenses),adeb=S.debts.filter(function(d){return !d.paid;});
+var ti=inc.reduce(function(s,i){return s+i.amount;},0);
+var te=exp.reduce(function(s,e){return s+e.amount;},0);
+var td=adeb.reduce(function(s,d){return s+d.amount;},0);
+var rem=ti-te;
+var pct=S.tot0>0?Math.round(((S.tot0-td)/S.tot0)*100):0;
+
+var hel=document.getElementById(‘J_rem’);
+hel.textContent=fmt(rem);
+hel.className=‘hero-amount ‘+(rem>=0?‘pos’:‘neg’);
+document.getElementById(‘J_remsub’).textContent=rem>=0?‘Орлогын ‘+(ti>0?Math.round(rem/ti*100):0)+’% үлдсэн’:‘Зарлага орлогоос их байна!’;
+document.getElementById(‘J_inc’).textContent=fmt(ti);
+document.getElementById(‘J_exp’).textContent=fmt(te);
+document.getElementById(‘J_dbt’).textContent=fmt(td);
+document.getElementById(‘J_dbtcnt’).textContent=adeb.length;
+document.getElementById(‘J_pct’).textContent=pct+’%’;
+document.getElementById(‘J_bar’).style.width=pct+’%’;
+document.getElementById(‘J_barsub’).textContent=pct+’% төлөгдсөн • ‘+fmt(td)+’ үлдсэн’;
+
+// snowball
+var snow=adeb.slice().sort(function(a,b){return a.amount-b.amount;});
+var sel=document.getElementById(‘J_snow’);
+if(!snow.length){sel.innerHTML=’<div class="empty"><div class="empty-icon">🎉</div>Өр алга — амжилт!</div>’;}
+else{
+var cum=0;
+sel.innerHTML=snow.map(function(d,i){
+cum+=(d.monthly||0);
+var eff=cum>0?Math.ceil(d.amount/cum):null;
+return ‘<div class="snow-item"><div class="snow-num">’+(i+1)+’</div><div class="snow-name">’+d.name+’</div>’+
+‘<div style="text-align:right"><div style="font-size:0.8rem;color:var(--red);font-weight:700">’+fmt(d.amount)+’</div>’+
+(eff?’<div style="font-size:0.62rem;color:var(--muted)">~’+eff+’ сар</div>’:’’)+
+‘</div></div>’;
+}).join(’’);
+}
+
+// debts
+var dl=document.getElementById(‘J_dlist’);
+if(!S.debts.length){dl.innerHTML=’<div class="empty"><div class="empty-icon">💳</div>Өр зээлээ нэмж эхлээрэй</div>’;}
+else{
+dl.innerHTML=S.debts.map(function(d){
+var pp=d.original>0?Math.round(((d.original-d.amount)/d.original)*100):100;
+var mo=d.monthly>0&&d.amount>0?Math.ceil(d.amount/d.monthly):null;
+return ‘<div class="item'+(d.paid?' paid':'')+'">’+
+‘<div class="item-top"><span class="item-name">’+d.name+’</span><span class="item-amt r">’+fmt(d.amount)+’</span></div>’+
+‘<div class="item-meta">’+(d.interest>0?‘Хүү: ‘+d.interest+’%/сар • ‘:’’)+(d.monthly>0?‘Сарын: ‘+fmt(d.monthly):’’)+(mo?’ • ~‘+mo+’ сар’:’’)+’</div>’+
+‘<div class="prog-bg"><div class="prog-fill" style="width:'+pp+'%"></div></div>’+
+‘<div class="item-acts">’+
+(d.paid?’<span class="badge-paid">✓ Төлөгдсөн</span>’:’<button class="btn-pay" data-id="'+d.id+'">💸 Төлөх</button>’)+
+‘<button class="btn-del" data-id="'+d.id+'">Устгах</button>’+
+‘<span style="font-size:0.62rem;color:var(--muted);margin-left:auto">’+pp+’%</span>’+
+‘</div></div>’;
+}).join(’’);
+
+```
+dl.querySelectorAll('.btn-pay').forEach(function(b){
+  b.addEventListener('click',function(){
+    var id=Number(b.dataset.id);
+    var d=S.debts.filter(function(x){return x.id===id;})[0];
+    if(d) modalPay(d);
+  });
+});
+dl.querySelectorAll('.btn-del').forEach(function(b){
+  b.addEventListener('click',function(){
+    var id=Number(b.dataset.id);
+    var d=S.debts.filter(function(x){return x.id===id;})[0];
+    if(!d)return;
+    modalDel(d.name,function(){
+      S.tot0=Math.max(0,S.tot0-d.original);
+      S.debts=S.debts.filter(function(x){return x.id!==id;});
+      save();render();
+    });
+  });
+});
+```
+
+}
+
+// income
+var il=document.getElementById(‘J_ilist’);
+if(!inc.length){il.innerHTML=’<div class="empty"><div class="empty-icon">💵</div>Орлогоо нэмж эхлээрэй</div>’;}
+else{
+il.innerHTML=inc.map(function(i){
+return ‘<div class="item"><div class="item-top"><span class="item-name">’+i.name+’</span><span class="item-amt g">’+fmt(i.amount)+’</span></div>’+
+‘<div class="item-acts"><button class="btn-del" data-id="'+i.id+'">Устгах</button></div></div>’;
+}).join(’’);
+il.querySelectorAll(’.btn-del’).forEach(function(b){
+b.addEventListener(‘click’,function(){
+var id=Number(b.dataset.id);
+var item=S.incomes.filter(function(x){return x.id===id;})[0];
+if(!item)return;
+modalDel(item.name,function(){
+S.incomes=S.incomes.filter(function(x){return x.id!==id;});
+save();render();
+});
+});
+});
+}
+
+// expenses
+var CL={need:‘🏠 Хэрэгцээ’,want:‘🎉 Хүсэл’,save:‘💰 Хадгалалт’};
+var CB={need:‘badge-cat badge-need’,want:‘badge-cat badge-want’,save:‘badge-cat badge-save’};
+var el=document.getElementById(‘J_elist’);
+if(!exp.length){el.innerHTML=’<div class="empty"><div class="empty-icon">📝</div>Зарлагаа нэмж эхлээрэй</div>’;}
+else{
+el.innerHTML=exp.map(function(e){
+return ‘<div class="item"><div class="item-top"><span class="item-name">’+e.name+’</span><span class="item-amt r">’+fmt(e.amount)+’</span></div>’+
+‘<div class="item-meta"><span class="'+(CB[e.cat]||'badge-cat')+'">’+(CL[e.cat]||’’)+’</span></div>’+
+‘<div class="item-acts"><button class="btn-del" data-id="'+e.id+'">Устгах</button></div></div>’;
+}).join(’’);
+el.querySelectorAll(’.btn-del’).forEach(function(b){
+b.addEventListener(‘click’,function(){
+var id=Number(b.dataset.id);
+var item=S.expenses.filter(function(x){return x.id===id;})[0];
+if(!item)return;
+modalDel(item.name,function(){
+S.expenses=S.expenses.filter(function(x){return x.id!==id;});
+save();render();
+});
+});
+});
+}
+
+// budget
+var bt=document.getElementById(‘J_btable’);
+if(!ti){bt.innerHTML=’<div class="bud-row"><span>Орлого нэмнэ үү →</span><span style="color:var(--muted)">Орлого таб</span></div>’;}
+else{
+var need=exp.filter(function(e){return e.cat===‘need’;}).reduce(function(s,e){return s+e.amount;},0);
+var want=exp.filter(function(e){return e.cat===‘want’;}).reduce(function(s,e){return s+e.amount;},0);
+var sav=exp.filter(function(e){return e.cat===‘save’;}).reduce(function(s,e){return s+e.amount;},0);
+var rN=Math.round(ti*.5),rW=Math.round(ti*.3),rS=Math.round(ti*.2);
+function ds(a,t){var d=a-t;return ‘<span style="color:'+(d>0?'var(--red)':'var(--green)')+';font-size:0.7rem">’+(d>0?’+’:’’)+fmt(d)+’</span>’;}
+bt.innerHTML=
+‘<div class="bud-row"><span>Нийт орлого</span><span style="color:var(--green)">’+fmt(ti)+’</span></div>’+
+‘<div class="bud-row"><span>🏠 Хэрэгцээ (50%=’+fmt(rN)+’)</span><span>’+fmt(need)+’ ‘+ds(need,rN)+’</span></div>’+
+‘<div class="bud-row"><span>🎉 Хүсэл (30%=’+fmt(rW)+’)</span><span>’+fmt(want)+’ ‘+ds(want,rW)+’</span></div>’+
+‘<div class="bud-row"><span>💰 Хадгалалт (20%=’+fmt(rS)+’)</span><span>’+fmt(sav)+’ ‘+ds(sav,rS)+’</span></div>’+
+‘<div class="bud-row"><span style="font-weight:700;color:var(--text)">Үлдэгдэл</span><span style="color:'+(rem>=0?'var(--green)':'var(--red)')+';font-weight:800">’+fmt(rem)+’</span></div>’;
+}
+}
+
+renderBanks();
+render();
+})();
+</script>
+
+</body>
+</html>
